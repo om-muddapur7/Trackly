@@ -102,13 +102,11 @@ app.post("/signin", (req, res) => {
 
     const token = jwt.sign({
         userId: userExixts.id
-    }, "atlassiansupperpassword123")
+    }, "trello_password")
 
     res.json({
         token
     })
-
-    
 })
 
 //Authencated routes - middleware
@@ -133,7 +131,7 @@ app.post("/organization",authMiddleware, (req, res) => {
 //add mems to organizations
 app.post("/add-mem-to-organization", authMiddleware,  (req, res) => {
     const userId = req.userId;
-    const organizationId = req.body.organizationId;
+    const organizationId = parseInt(req.body.organizationId);
     const memUserUsername = req.body.memUserUsername;
 
     const organization = ORGANIZATIONS.find(org => org.id === organizationId);
@@ -161,13 +159,56 @@ app.post("/add-mem-to-organization", authMiddleware,  (req, res) => {
 })
 
 //add boards
-app.post("/board", (req, res) => {
-    
+app.post("/board", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.body.organizationId)
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+    if(!organization || organization.admin != userId){
+        return res.status(403).json({
+            messgae: "Either org is not there or person is not admin"
+        })
+    }
+
+    BOARDS.push({
+        id: BOARD_ID++,
+        title: req.body.title,
+        organizationId
+    })
+
+    res.json({
+        message: "New board added"
+    })
+
 })
 
 // add or switch issues
-app.post("/issue", (req, res) => {
-    
+app.post("/issue", authMiddleware, (req, res) => {
+    const boardId = parseInt(req.body.boardId);
+    const state = req.body.state;
+
+    const board = BOARDS.find(brd => brd.id === boardId);
+    if(!board){
+        return res.status(403).json({
+            message: "Board not there"
+        })
+    }
+
+    const validStates = ["TODO", "IN_PROGRESS", "DONE"];
+    if (!validStates.includes(state)) {
+        return res.status(400).json({ message: "Invalid state" });
+    }
+
+    ISSUES.push({
+        id: ISSUES_ID++,
+        title: req.body.title,
+        boardId,
+        state: req.body.state
+    })
+
+    res.json({
+        message: "New issue added"
+    })
 })
 
 //READ
@@ -189,7 +230,6 @@ app.get("/organization", authMiddleware, (req, res) => {
             ...organization,
             members: organization.members.map(memberId => {
                 const user = USERS.find(user => user.id === memberId);
-
                 return{
                     id: user.id,
                     username: user.username
@@ -202,34 +242,125 @@ app.get("/organization", authMiddleware, (req, res) => {
 
 
 //display boards as per orgID
-app.get("/boards", (req, res) => {
-    
+app.get("/boards", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+    if(!organization){
+        res.status(411).json({
+            message: "Either org doesnt exist or you are not the admin"
+        })
+        return;
+    }
+
+    const boards = BOARDS.filter(brd => brd.organizationId === organizationId);
+
+    res.json({
+        boards: {
+            ...boards
+        }
+    })
 })
 
 //display issues
-app.get("/issues", (req, res) => {
-    
+app.get("/issues", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const boardId = parseInt(req.query.boardId);
+
+    const board = BOARDS.find(brd => brd.id === boardId);
+    if(!board){
+        res.status(411).json({
+            message: "board doesnt exist"
+        })
+        return;
+    }
+
+    const issues = ISSUES.filter(iss => iss.id === boardId);
+
+    res.json({
+        issues: {
+            ...issues
+        }
+    })
 })
 
 //display mems of org
-app.get("/members", (req, res) => {
-    
+app.get("/members", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+    if(!organization){
+        res.status(411).json({
+            message: "Either org doesnt exist or you are not the admin"
+        })
+        return;
+    }
+
+    res.json({
+        organization: {
+            members: organization.members.map(memberId => {
+                const user = USERS.find(user => user.id === memberId);
+                return{
+                    id: user.id,
+                    username: user.username
+                }
+            })
+        }
+    })
 })
 
 
 //UPDATE
 //change status of issue
-app.put("/issues", (req, res) => {
-    
+app.put("/issues", authMiddleware, (req, res) => {
+    const issueId = parseInt(req.body.issueId);
+    const boardId = parseInt(req.body.boardId);
+
+    const newState = req.body.newState;
+
+    const board = BOARDS.find(brd => brd.id === boardId);
+    if(!board){
+        res.status(411).json({
+            message: "board doesnt exist"
+        })
+        return;
+    }
+
+    const issue = ISSUES.find(iss => iss.id === issueId);
+    if(!issue){
+        res.status(411).json({
+            message: "issue doesnt exist"
+        })
+        return;
+    }
+
+    if (issue.boardId !== boardId) {
+        return res.status(400).json({ message: "Issue does not belong to this board" });
+    }
+
+    const validStates = ["TODO", "IN_PROGRESS", "DONE"];
+    if (!validStates.includes(newState)) {
+        return res.status(400).json({ message: "Invalid state" });
+    }
+
+    issue.state = newState;
+
+    res.status(200).json({
+        message: "Issue updated successfully",
+        issue
+    })
 })
 
 //DELETE
-app.delete("/members", (req, res) => {
-     const userId = req.userId;
-    const organizationId = req.body.organizationId;
+app.delete("/members", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const organizationId = parseInt(req.body.organizationId);
     const memUserUsername = req.body.memUserUsername;
 
     const organization = ORGANIZATIONS.find(org => org.id === organizationId);
+
     if(!organization || organization.admin != userId){
         res.status(411).json({
             message: "Either org doesnt exist or you are not the admin"
@@ -245,7 +376,7 @@ app.delete("/members", (req, res) => {
         return;
     }
 
-    organization.members = organization.members.filter(user => user.id != memberuser.id);
+    organization.members = organization.members.filter((memberId) => memberId != memberuser.id);
 
     res.json({
         message: "member deleted"

@@ -1,9 +1,16 @@
 const jwt = require('jsonwebtoken');
 
 function authMiddleware(req, res, next){
-    const token = req.headers.token;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({
+            message: "No token provided"
+        });
+    }
 
-    const decoded = jwt.verify(token, "atlassiansupperpassword123")
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, "trello_password")
     const userId = decoded.userId;
 
     if(userId){
@@ -11,7 +18,7 @@ function authMiddleware(req, res, next){
         next();
     }
     else{
-        res.status(403).json({
+        return res.status(403).json({
             message: "Token was malformed"
         })
     }
