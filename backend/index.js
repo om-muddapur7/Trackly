@@ -2,6 +2,13 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+const path = require('path');
+const cors = require("cors");
+app.use(cors());
+
+const frontend_path = path.join(__dirname, "..", "frontend");
+app.use(express.static(frontend_path));
+
 const jwt = require('jsonwebtoken');
 const {authMiddleware} = require('./middleware.js')
 const {userModel, organizationModel, boardModel, issueModel} = require('./models.js')
@@ -389,5 +396,16 @@ app.delete("/members", authMiddleware, async (req, res) => {
 
 // --------------------------------------------------------------------------------------------------
 
+app.get("/signup", (req, res) => {
+    res.sendFile(path.join(frontend_path, "signup.html"));
+})
 
-app.listen(3000);
+app.get("/signin", (req, res) => {
+    res.sendFile(path.join(frontend_path, "signin.html"));
+})
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log("Server running");
+});

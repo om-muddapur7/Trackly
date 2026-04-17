@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Signin</title>
 
-    
     <style>
         body{
             margin: 0%;
@@ -111,7 +111,6 @@
         }
 
         button:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 18px rgba(76, 175, 80, 0.3);
         }
 
@@ -127,7 +126,6 @@
 </head>
 
 <body>
-
     <div class="main">
 
         <div class="left">
@@ -154,6 +152,29 @@
         </div>
         
     </div>
+
+    <script>
+
+        async function signin(){
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try{
+                const response = await axios.post(`${window.location.origin}/signin`, {username, password});
+
+                const token = response.data.token;
+                localStorage.setItem("token", token);
+
+                alert("User Signed in successfully");
+                window.location = '/';
+            }
+            catch(error){
+                console.log("Signin failed", error);
+                alert('Something went wrong. Signin failed');
+            }
+        }
+    </script>
+
 
     
 </body>
