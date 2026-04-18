@@ -1,1 +1,1 @@
-memUserUsername
+api/boards

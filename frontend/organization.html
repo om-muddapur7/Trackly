@@ -111,12 +111,12 @@
 
                 for(let i=0; i<org.length; i++){
                     document.getElementById("cards").innerHTML += `
-                        <div id="org-card">
+                        <div id="org-card" onclick="openOrg('${org[i].id}')">
                             <div class="card-header">
                                 Organization ${i + 1}
                             </div>
 
-                            <div class="card-body">
+                            <div class="card-body" >
                                 <h3><b>Title:</b>  ${org[i].title}</h3> 
                                 <h3><b>Description:</b>  ${org[i].description}</h3>
                                 <h3><b>Admin ID:</b>  ${org[i].admin}</h3> 
@@ -125,7 +125,7 @@
                                     ${org[i].members.map(m => `
                                         <li data-id="${m.id}">
                                             ${m.username}
-                                            <button onclick="removeMember('${m.id}')">Remove</button>
+                                            <button onclick="removeMember(event, '${m.id}')">Remove</button>
                                         </li>
                                     `).join("")}
                                 </ul>
@@ -138,6 +138,16 @@
                 console.log("Fetch Org's failed", error);
                 alert('Something went wrong.');
             }
+        }
+
+        function openOrg(orgId){
+            alert("Opening Org: ", orgId);
+            window.location.href = `board.html?orgId=${orgId}`;
+        }
+
+        function removeMember(event, memberId) {
+            event.stopPropagation();  //  prevents card click
+            console.log("Remove member:", memberId);
         }
 
         getOrgs();

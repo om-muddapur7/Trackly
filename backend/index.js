@@ -214,6 +214,7 @@ app.get("/api/organization", authMiddleware, async (req, res) => {
         });
 
         result.push({
+            id: org._id,
             title: org.title,
             description: org.description,
             admin: org.admin,
@@ -231,7 +232,7 @@ app.get("/api/organization", authMiddleware, async (req, res) => {
 
 
 //display boards as per orgID
-app.get("/boards", authMiddleware, async (req, res) => {
+app.get("/api/boards", authMiddleware, async (req, res) => {
     const userId = req.userId;
     const organizationId = req.query.organizationId;
 
@@ -412,6 +413,10 @@ app.get("/signin", (req, res) => {
 
 app.get("/organization", (req, res) => {
     res.sendFile(path.join(frontend_path, "organization.html"));
+})
+
+app.get("/board", (req, res) => {
+    res.sendFile(path.join(frontend_path, "board.html"));
 })
 
 const PORT = process.env.PORT || 3000;
