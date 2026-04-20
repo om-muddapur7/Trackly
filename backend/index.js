@@ -134,7 +134,7 @@ app.post("/add-mem-to-organization", authMiddleware,  async (req, res) => {
 })
 
 //add boards
-app.post("/board", authMiddleware, async (req, res) => {
+app.post("/add_board", authMiddleware, async (req, res) => {
     const userId = req.userId;
     const organizationId = req.body.organizationId;
 
@@ -382,6 +382,30 @@ app.delete("/delete_organization", authMiddleware,  async (req, res) => {
 
     res.json({
         message: "Organization deleted"
+    })
+    
+})
+
+app.delete("/delete_board", authMiddleware,  async (req, res) => {
+    const userId = req.userId;
+    const boardId = req.body.boardId;
+
+    const board = await boardModel.findOne({
+        _id: boardId
+    });
+
+    if(!board){
+        return res.status(403).json({
+            message: "Board not there"
+        })
+    }
+
+    await boardModel.deleteOne({
+        _id: boardId
+    });
+
+    res.json({
+        message: "Board deleted"
     })
     
 })
