@@ -160,7 +160,7 @@ app.post("/add_board", authMiddleware, async (req, res) => {
 })
 
 // add or switch issues
-app.post("/issue", authMiddleware, async (req, res) => {
+app.post("/add_issue", authMiddleware, async (req, res) => {
     const boardId = req.body.boardId;
     const state = req.body.state;
 
@@ -317,48 +317,48 @@ app.get("/members", authMiddleware, async (req, res) => {
 
 //UPDATE
 //change status of issue
-app.put("/issues", authMiddleware, async (req, res) => {
-    const issueId = req.body.issueId;
-    const boardId = req.body.boardId;
-    const newState = req.body.newState;
+app.put("/issues_state", authMiddleware, async (req, res) => {
+    try {
+        const { issueId, boardId, newState } = req.body;
 
-    const board = await boardModel.findOne({
-        _id: boardId
-    })
-    if(!board){
-        res.status(411).json({
-            message: "board doesnt exist"
-        })
-        return;
+        console.log("BODY:", req.body);
+
+        const mongoose = require("mongoose");
+
+        if (!mongoose.Types.ObjectId.isValid(issueId) || 
+            !mongoose.Types.ObjectId.isValid(boardId)) {
+            return res.status(400).json({ message: "Invalid ID" });
+        }
+
+        const board = await boardModel.findById(boardId);
+        if (!board) {
+            return res.status(404).json({ message: "Board not found" });
+        }
+
+        const issue = await issueModel.findById(issueId);
+        if (!issue) {
+            return res.status(404).json({ message: "Issue not found" });
+        }
+
+        if (issue.boardId && issue.boardId.toString() !== boardId) {
+            return res.status(400).json({ message: "Mismatch board" });
+        }
+
+        const validStates = ["TODO", "IN_PROGRESS", "DONE"];
+        if (!validStates.includes(newState)) {
+            return res.status(400).json({ message: "Invalid state" });
+        }
+
+        issue.state = newState; 
+        await issue.save();
+
+        res.json({ message: "Updated", issue });
+
+    } catch (err) {
+        console.error("FULL ERROR:", err);
+        res.status(500).json({ error: err.message });
     }
-
-    const issue = await issueModel.findOne({
-        _id: issueId
-    })
-    if(!issue){
-        res.status(411).json({
-            message: "issue doesnt exist"
-        })
-        return;
-    }
-
-    if (issue.boardId.toString() !== boardId) {
-        return res.status(400).json({ message: "Issue does not belong to this board" });
-    }
-
-    const validStates = ["TODO", "IN_PROGRESS", "DONE"];
-    if (!validStates.includes(newState)) {
-        return res.status(400).json({ message: "Invalid state" });
-    }
-
-    issue.state = newState;
-    await issue.save();
-
-    res.status(200).json({
-        message: "Issue updated successfully",
-        issue
-    })
-})
+});
 
 //DELETE
 app.delete("/delete_organization", authMiddleware,  async (req, res) => {
@@ -406,6 +406,31 @@ app.delete("/delete_board", authMiddleware,  async (req, res) => {
 
     res.json({
         message: "Board deleted"
+    })
+    
+})
+
+app.delete("/delete_issue", authMiddleware,  async (req, res) => {
+    const userId = req.userId;
+    const issueId = req.body.issueId;
+
+    const issue = await issueModel.findOne({
+        _id: issueId
+    })
+
+    if(!issue){
+        res.status(411).json({
+            message: "issue doesnt exist"
+        })
+        return;
+    }
+
+    await issueModel.deleteOne({
+        _id: issueId
+    });
+
+    res.json({
+        message: "Issue deleted"
     })
     
 })
