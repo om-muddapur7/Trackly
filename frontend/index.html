@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Home</title>
+
+		<style>
+			/* ===== GLOBAL ===== */
+			body {
+				margin: 0;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				min-height: 100vh;
+
+				background: linear-gradient(135deg, #0f172a, #1e293b, #020617);
+				color: #e2e8f0;
+			}
+
+			/* ===== NAVBAR ===== */
+			.navbar {
+				position: sticky;
+				top: 0;
+				z-index: 1000;
+
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				padding: 14px 28px;
+
+				background: rgba(15, 23, 42, 0.85);
+				backdrop-filter: blur(10px);
+
+				border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+			}
+
+			.logo {
+				font-size: 24px;
+				font-weight: bold;
+				color: white;
+			}
+
+			.nav-center {
+				display: flex;
+				gap: 26px;
+			}
+
+			.nav-center a {
+				text-decoration: none;
+				color: #cbd5f5;
+				font-size: 15px;
+				transition: 0.2s;
+			}
+
+			.nav-center a:hover {
+				color: #60a5fa;
+			}
+
+			.nav-btn {
+				background: linear-gradient(135deg, #ef4444, #dc2626);
+				color: white;
+				border: none;
+				padding: 6px 14px;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 14px;
+				transition: 0.2s;
+			}
+
+			.nav-btn:hover {
+				transform: scale(1.05);
+			}
+
+			/* ===== CONTAINER ===== */
+			.container {
+				flex: 1;
+				padding: 40px 60px;
+
+				display: flex;
+				flex-direction: column; /* 🔥 KEY CHANGE */
+				gap: 28px;
+			}
+
+			/* ===== CARDS (GLASS UI) ===== */
+			.title-card,
+			.orgs-card,
+			.brd-card,
+			.issues-card {
+				background: rgba(255, 255, 255, 0.08);
+				backdrop-filter: blur(12px);
+
+				border-radius: 16px;
+				padding: 24px;
+
+				border: 1px solid rgba(255, 255, 255, 0.12);
+
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+				transition: all 0.25s ease;
+			}
+
+			/* Content layout */
+			.card-content {
+				display: flex;
+				gap: 20px;
+				align-items: center;
+			}
+
+			/* Image styling */
+			.card-content img {
+				width: 180px;
+				height: 140px;
+				object-fit: cover;
+				border-radius: 12px;
+
+				box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+			}
+
+			/* Text */
+			.card-text {
+				flex: 1;
+			}
+
+			.title-card:hover,
+			.orgs-card:hover,
+			.brd-card:hover,
+			.issues-card:hover {
+				transform: translateY(-6px);
+			}
+
+			/* ===== TITLE CARD ===== */
+			.title-card {
+				grid-column: span 2;
+				text-align: center;
+			}
+
+			.title-card h1 {
+				font-size: 40px;
+				margin-bottom: 10px;
+
+				background: linear-gradient(135deg, #60a5fa, #3b82f6);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+
+			.title-card p {
+				font-size: 16px;
+				opacity: 0.85;
+			}
+
+			/* ===== OTHER CARDS ===== */
+			.orgs-card h2,
+			.brd-card h2,
+			.issues-card h2 {
+				margin-bottom: 10px;
+				color: #f1f5f9;
+			}
+
+			.orgs-card p,
+			.brd-card p,
+			.issues-card p {
+				font-size: 14px;
+				line-height: 1.6;
+				color: #cbd5f5;
+			}
+
+			/* ===== CARD ACCENT COLORS ===== */
+			.orgs-card {
+				border-left: 4px solid #1677ff;
+			}
+
+			.brd-card {
+				border-left: 4px solid #faad14;
+			}
+
+			.issues-card {
+				border-left: 4px solid #22c55e;
+			}
+
+			/* ===== FOOTER ===== */
+			.footer {
+				margin-top: 40px;
+				padding: 20px 40px;
+
+				background: rgba(15, 23, 42, 0.9);
+				backdrop-filter: blur(10px);
+
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				color: #94a3b8;
+			}
+
+			.footer-content {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+
+			/* Social Links */
+			.social-links a {
+				margin-right: 16px;
+				text-decoration: none;
+				color: #cbd5f5;
+				font-size: 14px;
+				transition: 0.2s;
+			}
+
+			.social-links a:hover {
+				color: #60a5fa;
+			}
+
+			/* Copyright */
+			.footer p {
+				font-size: 13px;
+				margin: 0;
+			}
+
+			/* ===== RESPONSIVE ===== */
+			@media (max-width: 768px) {
+				.container {
+					padding: 20px;
+				}
+
+				.title-card {
+					grid-column: span 1;
+				}
+
+				.footer-content {
+					flex-direction: column;
+					gap: 10px;
+					text-align: center;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<nav class="navbar">
+			<div class="nav-left">
+				<span class="logo">Trello</span>
+			</div>
+
+			<div class="nav-center">
+				<a href="#">Home</a>
+				<a href="#">Organizations</a>
+				<a href="#">Boards</a>
+				<a href="#">Issues</a>
+			</div>
+
+			<div class="nav-right">
+				<button class="nav-btn" onclick="signout()">Logout</button>
+			</div>
+		</nav>
+
+		<div class="container">
+			<div class="title-card">
+				<h1>Trello</h1>
+				<p>
+					Manage your work efficiently with a simple and powerful workflow
+					system. Create organizations, organize boards, and track issues
+					seamlessly — all in one place.
+				</p>
+			</div>
+
+			<div class="orgs-card">
+				<h2>Organizations</h2>
+				<div class="card-content">
+					<img
+						src="../images/62a844ed71fde9b186402214_1ccf48_9013a438fa5a4ca39fa6dd207c5976fc_mv2.jpg"
+						alt=""
+					/>
+					<div class="card-text">
+						<p>
+							Organizations help you group work based on teams, projects, or
+							goals. You can create multiple organizations for different
+							purposes like college, startups, or personal work.
+						</p>
+						<p>
+							Each organization allows you to manage members and control access.
+							Add teammates and collaborate efficiently within a structured
+							environment.
+						</p>
+						<p>Think of an organization as your top-level workspace.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="brd-card">
+				<h2>Boards</h2>
+				<div class="card-content">
+					<img src="../images/3210.jpg" alt="" />
+					<div class="card-text">
+						<p>
+							Boards exist inside organizations and help you break work into
+							manageable sections. Each board can represent a project, sprint,
+							or workflow.
+						</p>
+						<p>
+							Use boards to visually organize tasks and track progress. They act
+							as containers where all your issues (tasks) are managed.
+						</p>
+						<p>
+							Example: “Website Development”, “Placement Prep”, or “Hackathon
+							Project”.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="issues-card">
+				<h2>Issues</h2>
+				<div class="card-content">
+					<img src="../images/Kanban.jpg" alt="" />
+					<div class="card-text">
+						<p>
+							Issues are the smallest unit of work — tasks you need to complete.
+							Each issue belongs to a board and moves through different stages.
+						</p>
+						<p>
+							Track progress using states like:
+							<b>TODO → IN PROGRESS → DONE</b>
+						</p>
+						<p>
+							This helps you maintain clarity, stay organized, and ensure
+							nothing gets missed.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer">
+			<div class="footer-content">
+				<div class="social-links">
+					<a href="#" target="_blank">GitHub</a>
+					<a href="#" target="_blank">LinkedIn</a>
+					<a href="#" target="_blank">Twitter</a>
+				</div>
+
+				<p>© 2026 Trello Clone. All rights reserved.</p>
+			</div>
+		</footer>
+	</body>
+</html>
