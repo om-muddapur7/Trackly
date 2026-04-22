@@ -1,0 +1,56 @@
+footer {
+	margin-top: auto;
+
+	padding: 15px 20px;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+
+	background: rgba(15, 23, 42, 0.8);
+	backdrop-filter: blur(10px);
+
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+footer p {
+	font-size: 14px;
+	margin: 0%;
+	padding: 0%;
+}
+
+.social-links {
+	display: flex;
+	gap: 20px;
+}
+
+.social-links a {
+	color: white;
+	font-size: 20px;
+	transition:
+		transform 0.2s ease,
+		color 0.2s ease;
+}
+
+.social-links a:hover {
+	color: var(--hover);
+	transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+	.nav-center {
+		display: none;
+	}
+
+	.card-content {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	footer {
+		flex-direction: column;
+		gap: 10px;
+		text-align: center;
+	}
+}
