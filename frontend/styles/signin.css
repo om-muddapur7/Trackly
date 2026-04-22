@@ -143,6 +143,15 @@ button p {
 	color: white;
 }
 
+p{
+	color: #e2e8f0;
+	text-align: center;
+}
+
+a{
+	color: inherit;
+}
+
 @media (max-width: 900px) {
 	.main {
 		flex-direction: column;

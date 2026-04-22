@@ -182,6 +182,11 @@ body {
 	transition: all 0.2s ease;
 }
 
+a{
+	text-decoration: none;
+	color: inherit;
+}
+
 .secondary-btn {
 	background: transparent;
 	border: 1px solid #72b1fe;

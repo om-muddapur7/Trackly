@@ -471,6 +471,9 @@ app.delete("/delete_members", authMiddleware, async (req, res) => {
 })
 
 // --------------------------------------------------------------------------------------------------
+app.get("/", (req, res) => {
+    res.sendFile(path.join(frontend_path, "index.html"));
+})
 
 app.get("/signup", (req, res) => {
     res.sendFile(path.join(frontend_path, "signup.html"));

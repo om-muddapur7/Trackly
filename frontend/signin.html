@@ -34,6 +34,7 @@
                 </div>
 
                 <button onclick="signin()"><p>Sign in</p></button>
+                <p>If not yet registered, <a href="./signup.html">Register here</a></p>
             </div>
         </div>
         
@@ -52,7 +53,7 @@
                 localStorage.setItem("token", token);
 
                 alert("User Signed in successfully");
-                window.location = '/organization';
+                window.location = '/';
             }
             catch(error){
                 console.log("Signin failed", error);
