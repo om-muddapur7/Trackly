@@ -4,7 +4,7 @@ import "../styles/Navbar.css";
 function Navbar() {
 	const navigate = useNavigate();
 
-	function signout() {
+	const signout = () => {
 		localStorage.removeItem("token");
 		alert("Signing out...");
 		navigate("/signin");

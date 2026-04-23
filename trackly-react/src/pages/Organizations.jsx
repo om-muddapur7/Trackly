@@ -1,26 +1,121 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer";
 import "../styles/organization.css";
+import {
+	getOrganizations,
+	deleteOrg,
+	addMember,
+	removeMember,
+	addOrg,
+} from "../api/organization_api.js";
 
 const Organization = () => {
-	const [orgs, setOrgs] = useState([]);
+	const navigate = useNavigate();
 
+    //opening ORG
+	const openOrg = (orgId) => {
+		alert("Opening Org");
+		navigate(`/board/${orgId}`);
+	};
+
+    //Variables
+	const [orgs, setOrgs] = useState([]);
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+
+    //ADD members
+	const handleAddMember = async (orgId) => {
+		const username = prompt("Enter member username:");
+		if (!username) return;
+
+		try {
+			const response = await addMember(orgId, username);
+
+            if (!response || !response.id) {
+                alert("Failed to add member");
+                return;
+            }
+
+            const newMember = {
+                id: response.id,
+                username: username   
+            };
+
+			setOrgs((prev) =>
+				prev.map((org) =>
+					org.id === orgId
+						? {
+								...org,
+								members: [...org.members, newMember],
+							}
+						: org,
+				),
+			);
+			alert("member added");
+		} catch (error) {
+			console.log(error);
+			alert("Error adding member");
+            throw error;
+		}
+	};
+
+    // REMOVE members
+	const handleRemoveMember = async (memberId, username, orgId) => {
+		try {
+			await removeMember(memberId, username, orgId);
+
+			setOrgs((prev) =>
+				prev.map((org) =>
+					org.id === orgId
+						? {
+								...org,
+								members: org.members.filter((m) => m.id !== memberId),
+							}
+						: org,
+				),
+			);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+    // ADD orgs
+	const handleAddOrg = async () => {
+		try {
+			await addOrg(title, description);
+
+			setOrgs((prev) => [
+				...prev,
+				{ id: Date.now(), title, description, members: [] },
+			]);
+
+			setTitle("");
+			setDescription("");
+		} catch (error) {
+			console.log(err);
+		}
+	};
+
+    // DELETE orgs
+	const handleDeleteOrg = async (orgId) => {
+		try {
+			await deleteOrg(orgId);
+
+			setOrgs((prev) => prev.filter((org) => org.id !== orgId));
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+    //render UI
 	useEffect(() => {
 		const fetchOrgs = async () => {
 			try {
-				const res = await axios.get("http://localhost:3000/api/organization", {
-					headers: {
-						token: localStorage.getItem("token"),
-					},
-				});
-
-				setOrgs(res.data.organizations || []);
-
-				console.log(res.data);
+				const data = await getOrganizations();
+				setOrgs(data || []);
 			} catch (error) {
 				console.log("Fetch Org's failed", error);
 				alert("Something went wrong.");
@@ -32,17 +127,47 @@ const Organization = () => {
 
 	return (
 		<>
-        <Navbar />
+			<Navbar />
 			<div className="container">
 				<h1 id="title">Organizations</h1>
 
 				{!orgs || orgs.length === 0 ? (
-					<p>No organizations found</p>
+                    <div className="cards" id="cards">
+                        <div id="org-card-input">
+                            <div className="card-header-input">Add new organization</div>
+
+                            <div className="card-body-input">
+                                <div className="input-field">
+                                    <label htmlFor="Inptitle">Title: </label>
+                                    <input
+                                        type="text"
+                                        id="Inptitle"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="input-field">
+                                    <label htmlFor="description">Description: </label>
+                                    <input
+                                        type="text"
+                                        id="description"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                    />
+                                </div>
+
+                                <button onClick={handleAddOrg} id="submitbtn">
+                                    Add organization
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 				) : (
 					<div className="cards" id="cards">
 						{orgs.map((org, index) => (
-							<div className="org-card" onclick="openOrg('${org[i].id}')">
-								<div className="card-header">Organization {index+1}</div>
+							<div className="org-card" key={org.id} onClick={() => openOrg(org.id)}>
+								<div className="card-header">Organization {index + 1}</div>
 
 								<div className="card-body">
 									<h3>
@@ -64,7 +189,7 @@ const Organization = () => {
 												<button
 													onClick={(e) => {
 														e.stopPropagation();
-														removeMember(m.id, m.username, org.id);
+														handleRemoveMember(m.id, m.username, org.id);
 													}}
 												>
 													Remove
@@ -76,7 +201,7 @@ const Organization = () => {
 									<button
 										onClick={(e) => {
 											e.stopPropagation();
-											addMember(org.id);
+											handleAddMember(org.id);
 										}}
 										id="addMembtn"
 									>
@@ -85,7 +210,7 @@ const Organization = () => {
 									<button
 										onClick={(e) => {
 											e.stopPropagation();
-											deleteOrg(org.id);
+											handleDeleteOrg(org.id);
 										}}
 										id="delOrgbtn"
 									>
@@ -94,10 +219,40 @@ const Organization = () => {
 								</div>
 							</div>
 						))}
+
+						<div id="org-card-input">
+							<div className="card-header-input">Add new organization</div>
+
+							<div className="card-body-input">
+								<div className="input-field">
+									<label htmlFor="Inptitle">Title: </label>
+									<input
+										type="text"
+										id="Inptitle"
+										value={title}
+										onChange={(e) => setTitle(e.target.value)}
+									/>
+								</div>
+
+								<div className="input-field">
+									<label htmlFor="description">Description: </label>
+									<input
+										type="text"
+										id="description"
+										value={description}
+										onChange={(e) => setDescription(e.target.value)}
+									/>
+								</div>
+
+								<button onClick={handleAddOrg} id="submitbtn">
+									Add organization
+								</button>
+							</div>
+						</div>
 					</div>
 				)}
 			</div>
-
+			<Footer />
 		</>
 	);
 };

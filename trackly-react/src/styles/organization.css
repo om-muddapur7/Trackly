@@ -1,13 +1,26 @@
+html, body, #root {
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 body {
 	margin: 0;
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 	min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 	background: linear-gradient(135deg, #0f172a, #1e293b, #020617);
 }
 
 .container {
 	padding: 20px;
     width: 100%;
+    flex: 1;
 }
 
 #title {
@@ -194,65 +207,3 @@ button {
 	transform: scale(1.03);
 }
 
-.navbar {
-	position: sticky;
-	top: 0;
-	z-index: 1000;
-
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-
-	padding: 12px 24px;
-
-	background: rgba(15, 23, 42, 0.8);
-	backdrop-filter: blur(10px);
-
-	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.logo {
-	font-size: 25px;
-	font-weight: bold;
-
-	background: white;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-}
-
-.nav-center {
-	display: flex;
-	gap: 24px;
-}
-
-.nav-center a {
-	text-decoration: none;
-	color: #cbd5f5;
-	font-size: 16px;
-	transition: all 0.2s ease;
-}
-
-.nav-center a:hover {
-	color: #77b4ff;
-}
-
-.nav-right {
-	display: flex;
-	align-items: center;
-}
-
-.nav-btn {
-	background: red;
-	color: white;
-	font-weight: 600;
-	border: none;
-	padding: 6px 14px;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 15px;
-	transition: all 0.2s ease;
-}
-
-.nav-btn:hover {
-	transform: scale(1.05);
-}
