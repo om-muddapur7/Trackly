@@ -9,6 +9,14 @@ import "../styles/board.css";
 import { getBoards, deleteBoard, addBoard } from "../api/board_api.js";
 
 const Board = () => {
+    const navigate = useNavigate();
+    
+    //opening ORG
+    const openBoard = (brdId) => {
+        toast.info("Opening Board");
+        navigate(`/issue/${brdId}`);
+    };
+
 	const [boards, setBoards] = useState([]);
 	const [title, setTitle] = useState("");
 	const { orgId } = useParams();
@@ -96,7 +104,7 @@ const Board = () => {
 								id="brd-card"
 								key={brd._id}
 								onClick={() => {
-									openBoard(brd.id);
+									openBoard(brd._id);
 								}}
 							>
 								<div className="card-header">Board {index + 1}</div>

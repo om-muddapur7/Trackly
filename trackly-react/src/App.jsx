@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Organization from "./pages/Organizations";
 import Board from "./pages/Boards";
+import Issues from "./pages/Issues";
 
 function App() {
 	return (
@@ -13,6 +14,7 @@ function App() {
 				<Route path="/" element={<Home />} />
 				<Route path="/organization" element={<Organization />} />
 				<Route path="/board/:orgId" element={<Board />} />
+				<Route path="/issue/:brdId" element={<Issues />} />
 			</Routes>
 
 			<ToastContainer />
