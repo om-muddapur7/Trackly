@@ -131,7 +131,7 @@ const Organization = () => {
 				setOrgs(data || []);
 			} catch (error) {
 				console.log("Fetch Org's failed", error);
-				alert("Something went wrong.");
+				toast.error("Something went wrong.");
 			}
 		};
 
